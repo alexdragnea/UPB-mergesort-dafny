@@ -1,4 +1,16 @@
 # Formal Verification Documentation
+## Introduction
+
+In this project, the corectness of mergeSort implementation is tested using formal verification in Dafny.
+
+**Merge sort** is a sorting algorithm that follows the divide-and-conquer approach. It works by recursively dividing the input array into smaller subarrays and sorting those subarrays then merging them back together to obtain the sorted array.
+
+
+## Formal Verification Techniques used
+- **Preconditions**: Specify conditions that must be true before a function or method is executed. (e.g requires)
+- **Postconditions**: Define conditions that must hold true after a function or method has executed. (e.g ensures)
+- **Loop Invariants**: Assertions that hold true before and after each iteration of a loop.
+- **Assertions**: Statements that validate specific conditions or properties during program execution.
 
 # MergeSort module ("mergeSort.dfy")
 ### Split Method
