@@ -13,88 +13,55 @@ In this project, the corectness of mergeSort implementation is tested using form
 - **Assertions**: Statements that validate specific conditions or properties during program execution.
 
 # MergeSort module ("mergeSort.dfy")
-### Split Method
+## Method `split`
 
-#### Purpose
-The `split` method divides an array `a` into two subarrays, `left` and `right`, in order to prepare for the merge sort algorithm.
+- **Purpose:** Splits an array into two subarrays.
+- **Signature:** `method split(a: array<int>) returns (left: array<int>, right: array<int>)`
+- **Preconditions:** 
+  - `a.Length >= 2`: Ensures the array has at least two elements for splitting.
+- **Postconditions:** 
+  - `a.Length == left.Length + right.Length`: Guarantees that the lengths of the left and right subarrays sum up to the original array's length.
+  - `left.Length < a.Length && right.Length < a.Length`: Ensures both subarrays are smaller than the original array.
+  - `a[..] ==  left[..] + right[..]`: Verifies that concatenating the left and right subarrays reproduces the original array.
+- **Loop Invariant:** 
+  - `0 <= i <= left.Length`: Ensures the index `i` remains within the bounds of the left array during splitting.
+  - `left[..i] == a[..i]`: Verifies that elements copied to the left array correspond accurately to the original array `a`.
+  - `right[..(i - left.Length)] == a[left.Length..i]`: Ensures elements copied to the right array match the portion of the original array intended for the right side.
 
-#### Behavior
-- It takes an array `a` as input and returns two subarrays, `left` and `right`.
-- The method ensures that the lengths of `left` and `right` together equal the length of the original array `a`.
-- It guarantees that the lengths of `left` and `right` are both less than the length of `a`.
-- The method ensures that the elements of `a` are divided evenly between `left` and `right`.
+## Method `mergeSort`
 
-#### Checking
-- Preconditions:
-  - `a.Length >= 2`
-- Postconditions:
-  - `a.Length == left.Length + right.Length`
-  - `left.Length < a.Length && right.Length < a.Length`
-  - `a[..] == left[..] + right[..]`
-- Loop Invariant:
-  - `0 <= i <= left.Length`
-  - `left[..i] == a[..i]`
-  - `right[..(i - left.Length)] == a[left.Length..i]`
-- Assertions:
-  - The assertions ensure that the postconditions hold true during execution.
+- **Purpose:** Sorts an array using the MergeSort algorithm.
+- **Signature:** `method mergeSort(a: array<int>) returns (c: array<int>)`
+- **Formal Verification:**
+  - **Postconditions:** 
+    - `multiset(a[..]) ==  multiset(old(a)[..])`: Ensures the original array remains unchanged.
+    - `sorted(c)`: Confirms that the result array is sorted.
+    - `c.Length == a.Length`: Guarantees that the length of the result array is the same as the original array.
 
-### MergeSort Method
+## Method `merge`
 
-#### Purpose
-The `mergeSort` method sorts an array `a` using the merge sort algorithm.
+- **Purpose:** Merges two sorted arrays into a single sorted array.
+- **Signature:** `method merge(a: array<int>, b: array<int>) returns (c: array<int>)`
+- **Preconditions:** 
+  - `sorted(a) && sorted(b)`: Requires both input arrays to be sorted.
+  - `a.Length >= 1 && b.Length >= 1`: Ensures both input arrays have at least one element.
+- **Postconditions:** 
+  - `c.Length == a.Length + b.Length`: Guarantees that the length of the merged array is the sum of the lengths of the input arrays.
+  - `multiset(c[..]) ==  multiset(a[..]) + multiset(b[..])`: Verifies that the merged array contains all elements from both input arrays.
+  - `sorted(c)`: Confirms that the merged array is sorted.
+- **Formal Verification:**
+  - **Assertions:** 
+    - `multiset(c[..i]) ==  multiset(a[..a_head]) + multiset(b[..b_head])`: Verifies the correctness of the merge operation.
+    - `a[..a.Length] == a[..] && b[..b.Length] == b[..]`: Ensures input arrays `a` and `b` remain unchanged.
+    - `multiset(c[..]) ==  multiset(a[..]) + multiset(b[..])`: Confirms the integrity of the merged array.
+    - `b_head == b.Length`: Validates that all elements from array `b` are merged.
+    - `c[..c.Length] == c[..]`: Asserts that the merged array remains unchanged after the merge operation.
 
-#### Behavior
-- It takes an array `a` as input and returns the sorted array `c`.
-- The method ensures that the multiset of elements in `c` remains the same as the multiset of elements in the original array `a`.
-- It guarantees that the resulting array `c` is sorted.
-- The length of `c` remains the same as the length of `a`.
+## Predicate `sorted`
 
-#### Checking
-- Postconditions:
-  - `multiset(a[..]) == multiset(old(a)[..])`: Elements remain the same.
-  - `sorted(c)`: The resulting array `c` is sorted.
-  - `c.Length == a.Length`: The length remains unchanged.
-- Assertions:
-  - The assertions validate the postconditions after the sorting operation.
-
-### Merge Method
-
-#### Purpose
-The `merge` method combines two sorted arrays `a` and `b` into a single sorted array `c`.
-
-#### Behavior
-- It takes two sorted arrays, `a` and `b`, as input and returns the merged array `c`.
-- The method ensures that the resulting array `c` contains all elements from arrays `a` and `b`, preserving their multiset property.
-- It guarantees that the resulting array `c` is sorted.
-- The length of `c` is the sum of the lengths of `a` and `b`.
-
-#### Checking
-- Preconditions:
-  - `sorted(a)` and `sorted(b)`: Input arrays are sorted.
-  - `a.Length >= 1` and `b.Length >= 1`: Both arrays have at least one element.
-- Postconditions:
-  - `c.Length == a.Length + b.Length`: Length of merged array.
-  - `multiset(c[..]) == multiset(a[..]) + multiset(b[..])`: Elements in merged array.
-  - `sorted(c)`: The resulting array `c` is sorted.
-- Loop Invariant:
-  - Loop invariants ensure correctness during array merging.
-- Assertions:
-  - The assertions validate the preconditions and postconditions during execution.
-
-### Sorted Predicate
-
-#### Purpose
-The `sorted` predicate checks if an array is sorted in non-decreasing order.
-
-#### Behavior
-- It takes an array `a` as input and returns true if the array is sorted, and false otherwise.
-
-#### Checking
-- Reads clause: Ensures the predicate only reads the array `a`.
-- Condition:
-  - For all indices `j` and `k` where `0 <= j < k < a.Length`, the elements at indices `j` and `k` are in non-decreasing order.
-- Assertions:
-  - The assertions validate the condition during execution.
+- **Purpose:** Checks if an array is sorted in non-decreasing order.
+- **Signature:** `predicate sorted(a: array<int>)`
+- **Behavior:** Returns true if all elements in the array are in non-decreasing order, otherwise returns false.
 
 # Sort Module ("main.dfy")
 
